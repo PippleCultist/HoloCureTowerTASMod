@@ -41,11 +41,11 @@ void InputManagerStepBefore(std::tuple<CInstance*, CInstance*, CCode*, int, RVal
 	{
 		RValue playerPlatformer = g_ModuleInterface->CallBuiltin("instance_find", { objPlayerPlatformerIndex, 0 });
 		RValue onGround = getInstanceVariable(playerPlatformer, GML_onGround);
-		if (isOnGround && !onGround.AsBool())
+		if (isOnGround && !onGround.ToBoolean())
 		{
 			isOnGround = false;
 		}
-		else if (!isOnGround && onGround.AsBool())
+		else if (!isOnGround && onGround.ToBoolean())
 		{
 			callbackManagerInterfacePtr->LogToFile(MODNAME, "Landed on ground on frame %d", curTASFrame);
 			g_ModuleInterface->Print(CM_BLUE, "Landed on ground on frame %d", curTASFrame);

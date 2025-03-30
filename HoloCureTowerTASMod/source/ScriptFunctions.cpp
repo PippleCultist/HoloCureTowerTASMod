@@ -1,5 +1,5 @@
 #include <Aurie/shared.hpp>
-#include <YYToolkit/shared.hpp>
+#include <YYToolkit/YYTK_Shared.hpp>
 #include "ScriptFunctions.h"
 #include "CommonFunctions.h"
 #include "CodeEvents.h"
@@ -26,7 +26,7 @@ RValue& ConfirmedHoloHouseManagerCreateBefore(CInstance* Self, CInstance* Other,
 	RValue towerMode = g_ModuleInterface->CallBuiltin("variable_instance_get", { Self, "towerMode" });
 	RValue towerWin = g_ModuleInterface->CallBuiltin("variable_instance_get", { Self, "towerWin" });
 	RValue pauseOption = g_ModuleInterface->CallBuiltin("variable_instance_get", { Self, "pauseOption" });
-	int pauseOptionNum = static_cast<int>(lround(pauseOption.AsReal()));
+	int pauseOptionNum = static_cast<int>(lround(pauseOption.ToDouble()));
 	if (isInTower)
 	{
 		if (pauseOptionNum == 1)
@@ -63,6 +63,17 @@ bool isLeftPressed = false;
 
 RValue& InputCheckBefore(CInstance* Self, CInstance* Other, RValue& ReturnValue, int numArgs, RValue** Args)
 {
+	if (isInTower)
+	{
+		RValue holoHouseManager = g_ModuleInterface->CallBuiltin("instance_find", { objHoloHouseManagerIndex, 0 });
+		RValue paused = getInstanceVariable(holoHouseManager, GML_paused);
+		if (paused.ToBoolean())
+		{
+			callbackManagerInterfacePtr->CancelOriginalFunction();
+			return ReturnValue;
+		}
+	}
+
 	if (!isRunningTAS && !isRunningOverride)
 	{
 		return ReturnValue;
@@ -79,7 +90,7 @@ RValue& InputCheckBefore(CInstance* Self, CInstance* Other, RValue& ReturnValue,
 		commandMap = &overrideCommandMap;
 	}
 
-	if (Args[0]->AsString().compare("right") == 0)
+	if (Args[0]->ToString().compare("right") == 0)
 	{
 		if (commandMap->find(curTASFrame) != commandMap->end())
 		{
@@ -95,7 +106,7 @@ RValue& InputCheckBefore(CInstance* Self, CInstance* Other, RValue& ReturnValue,
 		ReturnValue = isRightPressed;
 		callbackManagerInterfacePtr->CancelOriginalFunction();
 	}
-	else if (Args[0]->AsString().compare("left") == 0)
+	else if (Args[0]->ToString().compare("left") == 0)
 	{
 		if (commandMap->find(curTASFrame) != commandMap->end())
 		{
@@ -133,17 +144,17 @@ RValue& InputCheckPressedBefore(CInstance* Self, CInstance* Other, RValue& Retur
 	}
 
 	bool hasTASCommand = false;
-	if (Args[0]->AsString().compare("actionOne") == 0)
+	if (Args[0]->ToString().compare("actionOne") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypePressCharge;
 		hasTASCommand = true;
 	}
-	else if (Args[0]->AsString().compare("left") == 0)
+	else if (Args[0]->ToString().compare("left") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypePressLeft;
 		hasTASCommand = true;
 	}
-	else if (Args[0]->AsString().compare("right") == 0)
+	else if (Args[0]->ToString().compare("right") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypePressRight;
 		hasTASCommand = true;
@@ -174,17 +185,17 @@ RValue& InputCheckReleasedBefore(CInstance* Self, CInstance* Other, RValue& Retu
 	}
 
 	bool hasTASCommand = false;
-	if (Args[0]->AsString().compare("actionOne") == 0)
+	if (Args[0]->ToString().compare("actionOne") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypeReleaseCharge;
 		hasTASCommand = true;
 	}
-	else if (Args[0]->AsString().compare("left") == 0)
+	else if (Args[0]->ToString().compare("left") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypeReleaseLeft;
 		hasTASCommand = true;
 	}
-	else if (Args[0]->AsString().compare("right") == 0)
+	else if (Args[0]->ToString().compare("right") == 0)
 	{
 		ReturnValue = (*commandMap)[curTASFrame].TASCommandTypeReleaseRight;
 		hasTASCommand = true;

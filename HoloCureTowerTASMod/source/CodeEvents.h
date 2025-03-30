@@ -1,7 +1,7 @@
 #pragma once
 #include "ModuleMain.h"
 #include <Aurie/shared.hpp>
-#include <YYToolkit/shared.hpp>
+#include <YYToolkit/YYTK_Shared.hpp>
 
 struct TASCommand
 {
